@@ -1,0 +1,11 @@
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant DB
+    User->>Frontend: Login(email, password)
+    Frontend->>Backend: POST /auth/login
+    Backend->>DB: Verify Credentials
+    DB-->>Backend: OK
+    Backend-->>Frontend: JWT Token
+    Frontend-->>User: Authenticated State

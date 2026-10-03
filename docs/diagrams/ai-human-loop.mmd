@@ -1,0 +1,6 @@
+flowchart TD
+    Data[Input Data / Evidence] --> AI[AI Analysis]
+    AI --> Review[AI Findings & Flags]
+    Review --> Human[Human Consultant/QS]
+    Human -->|Approves| NextState[Process Moves Forward]
+    Human -->|Rejects| Rework[Return to Contractor]

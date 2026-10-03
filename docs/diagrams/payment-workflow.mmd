@@ -1,0 +1,8 @@
+flowchart LR
+    BOQ[BOQ] --> CR[Check Request]
+    CR --> M[Measurement]
+    M --> V{Variation?}
+    V -->|Yes| VAR[Variation Approval]
+    V -->|No| IPC[IPC Generation]
+    VAR --> IPC
+    IPC --> APP[Client Approval]

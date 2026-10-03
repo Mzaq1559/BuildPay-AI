@@ -1,0 +1,7 @@
+erDiagram
+    Project ||--o{ BOQ : has
+    BOQ ||--o{ BOQItem : contains
+    Project ||--o{ CheckRequest : has
+    CheckRequest ||--o{ Measurement : verifies
+    Project ||--o{ IPC : generates
+    User ||--o{ Approval : makes

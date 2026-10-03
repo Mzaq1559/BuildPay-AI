@@ -1,0 +1,5 @@
+graph TD
+    Client[Web Browser] -->|HTTP| Frontend[Next.js App]
+    Frontend -->|REST| Backend[FastAPI App]
+    Backend -->|SQLAlchemy| DB[(PostgreSQL)]
+    Backend -->|HTTP| AI[Groq AI Service]
