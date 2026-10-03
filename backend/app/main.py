@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+import os
 from app.core.config import settings
 from app.core.db import create_db_and_tables
 from app.api.v1.router import api_router
@@ -10,6 +11,13 @@ from app.api.v1.router import api_router
 async def lifespan(app: FastAPI):
     # Create tables on startup
     create_db_and_tables()
+
+    # Seed demo users/data only when explicitly enabled.
+    # This keeps production deployments safe from accidental demo-data creation.
+    if os.getenv("SEED_DEMO_DATA", "").lower() == "true":
+        from app.seed.seed_data import seed_all
+        seed_all()
+
     yield
 
 
