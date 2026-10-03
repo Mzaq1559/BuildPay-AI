@@ -1,0 +1,54 @@
+
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: buildpay-postgres
+    environment:
+      POSTGRES_DB: buildpay
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: buildpay_password_2024
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: buildpay-backend
+    environment:
+      - ENVIRONMENT=production
+      - DATABASE_URL=postgresql://postgres:buildpay_password_2024@postgres:5432/buildpay
+      - SECRET_KEY=dev-secret-key-change-in-production-min-32-chars
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - FRONTEND_URL=http://localhost:3000
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - backend_uploads:/app/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: buildpay-frontend
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  backend_uploads:

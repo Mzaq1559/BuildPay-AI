@@ -1,0 +1,40 @@
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# SQLite dev DB
+*.db
+*.sqlite3
+
+# Node / Next.js
+node_modules/
+frontend/.next/
+frontend/out/
+frontend/.turbo/
+
+# Scratch / one-off refactor scripts
+refactor.py
+refactor2.py
+refactor3.py
+refactor4.py
+
+# macOS
+.DS_Store
+
+# Docker volumes (local data)
+postgres_data/
