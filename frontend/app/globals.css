@@ -153,6 +153,24 @@
   border: 1px solid rgba(245, 158, 11, 0.15);
 }
 
+/* Opaque variants for cards that float over other content (hero mockup).
+   Translucent glass lets the underlying text show through, so these are near-solid. */
+.landing-glass-overlay {
+  background: rgba(10, 15, 30, 0.97);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+}
+
+.landing-glass-amber-overlay {
+  background: rgba(26, 16, 6, 0.97);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+}
+
 @keyframes blueprint-scan {
   0% { transform: translateY(-100%); opacity: 0; }
   10% { opacity: 1; }
