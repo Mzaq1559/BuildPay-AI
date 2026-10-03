@@ -32,10 +32,43 @@ BuildPay AI is not an autonomous financial authority. AI assists the workflow by
 
 ```mermaid
 graph TD
-    Browser[Web Browser] -->|Next.js| UI(Frontend)
-    UI -->|REST/JSON| API(FastAPI Backend)
-    API -->|SQLModel| DB[(PostgreSQL)]
-    API -->|Groq API| AI[AI Service]
+    %% Client Layer
+    Browser[Web Browser / Client]
+
+    %% Frontend Layer (Next.js)
+    subgraph Frontend [Frontend - Next.js]
+        UI[UI Components]
+        State[State Management]
+    end
+
+    %% Backend Layer (FastAPI)
+    subgraph Backend [Backend - FastAPI]
+        API[API Router /v1]
+        Auth[JWT Authentication]
+        Business[Business Logic & Workflows]
+    end
+
+    %% Data & Storage Layer
+    subgraph Data [Data & Storage]
+        DB[(PostgreSQL)]
+        Uploads[Local File Uploads / Evidence]
+    end
+
+    %% External Services Layer
+    subgraph External [External Services]
+        AI[Groq AI Service]
+    end
+
+    %% Connections
+    Browser -->|HTTP/REST| UI
+    UI -->|JSON requests| API
+    State -.-> UI
+    API --> Auth
+    Auth --> Business
+    Business -->|SQLModel| DB
+    Business -->|Save/Read| Uploads
+    Business -->|Check Requests Data| AI
+    AI -->|AI Findings & Review| Business
 ```
 
 ## Documentation
