@@ -103,7 +103,7 @@ function BOQPanel() {
 // Floating AI finding card
 function AIFindingCard() {
   return (
-    <div className="landing-glass-amber rounded-xl p-4 border-glow-amber">
+    <div className="landing-glass-amber-overlay rounded-xl p-4 border-glow-amber">
       <div className="flex items-start gap-3">
         <div className="p-1.5 bg-amber-500/20 rounded-lg shrink-0 mt-0.5">
           <ShieldCheck className="w-4 h-4 text-amber-400" />
@@ -128,7 +128,7 @@ function AIFindingCard() {
 // IPC summary card
 function IPCSummaryCard() {
   return (
-    <div className="landing-glass rounded-xl p-4">
+    <div className="landing-glass-overlay rounded-xl p-4">
       <div className="flex items-center justify-between mb-3">
         <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">IPC #3 — Period Summary</span>
         <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950/40 text-emerald-400 border border-emerald-500/20 font-semibold">Certified</span>
@@ -262,9 +262,9 @@ export function HeroSection() {
                 <BOQPanel />
               </div>
 
-              {/* AI finding card — overlapping, offset */}
+              {/* AI finding card — overlaps the panel footer only, keeps table rows readable */}
               <motion.div
-                className="absolute -bottom-6 -left-4 sm:-left-8 w-72 sm:w-80 animate-float-panel-delay"
+                className="absolute -bottom-8 -left-4 sm:-left-8 lg:-bottom-20 w-72 sm:w-80 z-20 animate-float-panel-delay"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8, duration: 0.6 }}
@@ -272,9 +272,9 @@ export function HeroSection() {
                 <AIFindingCard />
               </motion.div>
 
-              {/* IPC card — top-right */}
+              {/* IPC card — sits above the table header so it never covers column data */}
               <motion.div
-                className="absolute -top-4 -right-4 sm:-right-6 w-56 sm:w-64"
+                className="absolute -top-6 -right-4 sm:-right-6 lg:-top-24 w-56 sm:w-64 z-20"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 1.0, duration: 0.6 }}
