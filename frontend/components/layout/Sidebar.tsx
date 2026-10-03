@@ -22,7 +22,7 @@ export const Sidebar: React.FC = () => {
   const pathname = usePathname();
 
   const navItems = [
-    { label: 'Overview', href: '/', icon: LayoutDashboard },
+    { label: 'Overview', href: '/dashboard', icon: LayoutDashboard },
     { label: 'Projects & BOQ', href: '/projects', icon: FolderKanban },
     { label: 'Check Requests', href: '/check-requests', icon: FileCheck2 },
     { label: 'Measurements', href: '/measurements', icon: Ruler },
@@ -42,7 +42,7 @@ export const Sidebar: React.FC = () => {
         
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
+          const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
           return (
             <Link
               key={item.href}

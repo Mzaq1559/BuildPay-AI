@@ -67,10 +67,11 @@ class ApiClient {
   }
 
   // Auth
-  async login(formData: FormData) {
-    const response = await fetch(`${API_BASE_URL}/auth/token`, {
+  async login(credentials: { email: string; password: string }) {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
-      body: formData,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(credentials),
     });
     if (!response.ok) {
       const err = await response.json().catch(() => ({ detail: 'Login failed' }));
@@ -79,6 +80,10 @@ class ApiClient {
     const data = await response.json();
     this.setToken(data.access_token);
     return data;
+  }
+
+  logout() {
+    this.setToken(null);
   }
 
   async getMe(): Promise<User> {
