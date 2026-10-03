@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShieldCheck, Bell, Sparkles, User as UserIcon, Database, Check } from 'lucide-react';
+import { ShieldCheck, Bell, Sparkles, User as UserIcon, Database, Check, LogOut } from 'lucide-react';
 import { api } from '@/lib/api';
+import { useRouter } from 'next/navigation';
 
 interface NavbarProps {
   currentRole: string;
@@ -10,6 +11,7 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ currentRole, onRoleChange }) => {
+  const router = useRouter();
   const [isSeeding, setIsSeeding] = useState(false);
   const [seedSuccess, setSeedSuccess] = useState(false);
 
@@ -33,6 +35,14 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRole, onRoleChange }) => 
     { value: 'client', label: 'Client / PM' },
     { value: 'admin', label: 'System Admin' },
   ];
+
+  const handleLogout = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
+    }
+    router.push('/');
+  };
 
   return (
     <header className="h-16 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-40 px-6 flex items-center justify-between">
@@ -105,6 +115,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRole, onRoleChange }) => 
           <div className="w-8 h-8 rounded-full bg-indigo-950 border border-indigo-500/40 flex items-center justify-center text-indigo-300 font-semibold text-xs">
             <UserIcon className="w-4 h-4" />
           </div>
+          
+          {/* Logout Button */}
+          <button onClick={handleLogout} className="p-2 ml-1 rounded-lg bg-slate-900/50 hover:bg-red-950/50 text-slate-400 hover:text-red-400 border border-transparent hover:border-red-900/50 transition-colors" title="Logout">
+            <LogOut className="w-4 h-4" />
+          </button>
         </div>
       </div>
     </header>
