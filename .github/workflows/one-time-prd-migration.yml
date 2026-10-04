@@ -9,19 +9,26 @@ permissions:
 
 jobs:
   update-prd:
-    if: hashFiles('.github/prd-migration.marker') != ''
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Check marker
+        id: marker
+        run: |
+          if [ -f .github/prd-migration.marker ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Update PRD
+        if: steps.marker.outputs.run == 'true'
         run: |
           python -m pip install --disable-pip-version-check python-docx
           python <<'PY'
           from docx import Document
-          from docx.shared import Pt
-          from docx.enum.text import WD_BREAK
 
           path = "docs/BuildPay AI PRD.docx"
           doc = Document(path)
@@ -36,40 +43,38 @@ jobs:
           run.bold = True
 
           doc.add_page_break()
-
           doc.add_heading("Current Implementation & Deployment Update", level=1)
+
           p = doc.add_paragraph()
           p.add_run("Status: ").bold = True
           p.add_run(
-              "This section supersedes earlier Streamlit-specific deployment details. "
-              "It reflects the current BuildPay AI implementation and Azure deployment."
+              "This section supersedes earlier Streamlit-specific deployment details and reflects "
+              "the current BuildPay AI implementation and Azure deployment."
           )
 
           doc.add_heading("1. Current Application UI", level=2)
           doc.add_paragraph(
-              "BuildPay AI uses a modern Next.js 16 + React 19 frontend with TypeScript, "
-              "Tailwind CSS, Radix UI components, Lucide icons, Framer Motion animations, "
-              "and Recharts for data visualisation. The public experience starts at a dedicated "
-              "landing page, followed by login and authenticated project-control workflows. "
-              "The production UI is not a Streamlit application."
+              "BuildPay AI uses a modern Next.js 16 + React 19 frontend with TypeScript, Tailwind CSS, "
+              "Radix UI components, Lucide icons, Framer Motion animations, and Recharts for data visualisation. "
+              "The public experience starts at a dedicated landing page, followed by login and authenticated "
+              "project-control workflows. The production UI is not a Streamlit application."
           )
 
           doc.add_heading("2. Backend & Data Layer", level=2)
           doc.add_paragraph(
-              "The backend is implemented with Python FastAPI and SQLAlchemy/SQLModel-style "
-              "database access against PostgreSQL. Authentication uses JWT-based access tokens. "
-              "The application exposes REST APIs for projects, BOQ items, check requests, "
-              "measurements, variations, IPC/payment workflows, documents, reports, AI findings, "
-              "and audit events."
+              "The backend is implemented with Python FastAPI and PostgreSQL database access. Authentication "
+              "uses JWT-based access tokens. The application exposes REST APIs for projects, BOQ items, "
+              "check requests, measurements, variations, IPC/payment workflows, documents, reports, "
+              "AI findings, and audit events."
           )
 
           doc.add_heading("3. AI / Agent Framework Status", level=2)
           doc.add_paragraph(
-              "CrewAI is NOT used in the current BuildPay AI implementation. There is no CrewAI "
-              "dependency or CrewAI-based orchestration in the repository. AI functionality follows "
-              "the product principle: AI prepares, checks, calculates and flags; humans authorize. "
-              "The current implementation uses the application's backend services and configured LLM "
-              "integration rather than a CrewAI multi-agent runtime."
+              "CrewAI is NOT used in the current BuildPay AI implementation. There is no CrewAI dependency "
+              "or CrewAI-based orchestration in the repository. AI functionality follows the product principle: "
+              "AI prepares, checks, calculates and flags; humans authorize. The current implementation uses "
+              "the application's backend services and configured LLM integration rather than a CrewAI "
+              "multi-agent runtime."
           )
 
           doc.add_heading("4. Azure Deployment Architecture", level=2)
@@ -79,7 +84,7 @@ jobs:
               "Azure Database for PostgreSQL Flexible Server provides the production relational database.",
               "Azure Container Apps Environment provides the shared managed container runtime and networking.",
               "Azure Log Analytics is associated with the Container Apps environment for application/container logs.",
-              "The current deployment uses HTTPS public ingress for the frontend and backend Container Apps.",
+              "The deployment uses HTTPS public ingress for the frontend and backend Container Apps.",
           ]:
               doc.add_paragraph(item, style="List Bullet")
 
@@ -114,24 +119,25 @@ jobs:
 
           doc.add_heading("8. Product Principle", level=2)
           doc.add_paragraph(
-              "BuildPay AI remains a human-in-the-loop construction project controls platform. "
-              "AI assists with preparation, checking, calculations and anomaly/issue flagging, while "
-              "authorized project participants retain responsibility for approvals, certifications and payments."
+              "BuildPay AI remains a human-in-the-loop construction project controls platform. AI assists with "
+              "preparation, checking, calculations and anomaly/issue flagging, while authorized project "
+              "participants retain responsibility for approvals, certifications and payments."
           )
 
           doc.add_heading("9. Superseded Streamlit Deployment", level=2)
           doc.add_paragraph(
-              "Any earlier section of this PRD that describes deploying BuildPay AI as a Streamlit app, "
-              "including Streamlit-specific hosting, UI, startup commands or deployment instructions, "
-              "should be treated as legacy project history and not as the current implementation. "
-              "The authoritative deployment model is the Next.js + FastAPI + PostgreSQL stack described above, "
-              "containerised with Docker and deployed on Azure Container Apps."
+              "Any earlier section of this PRD that describes deploying BuildPay AI as a Streamlit app, including "
+              "Streamlit-specific hosting, UI, startup commands or deployment instructions, should be treated as "
+              "legacy project history and not as the current implementation. The authoritative deployment model "
+              "is the Next.js + FastAPI + PostgreSQL stack described above, containerised with Docker and deployed "
+              "on Azure Container Apps."
           )
 
           doc.save(path)
           PY
 
       - name: Commit PRD update and remove one-time migration files
+        if: steps.marker.outputs.run == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
