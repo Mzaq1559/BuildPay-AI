@@ -1,6 +1,6 @@
 import openpyxl
 from pathlib import Path
-from sqlmodel import Session
+from sqlmodel import Session, select
 from app.models.boq import BOQ, BOQItem, BOQSection
 
 BOQ_TEMPLATES = {
@@ -24,7 +24,20 @@ BOQ_TEMPLATES = {
     },
 }
 
-DOCS_DIR = Path(__file__).parent.parent.parent.parent / "docs"
+def _get_docs_dir() -> Path:
+    base = Path(__file__).resolve().parent
+    candidates = [
+        base.parent.parent / "docs",
+        base.parent / "docs",
+        base.parent.parent.parent / "docs",
+    ]
+    for c in candidates:
+        if c.exists():
+            return c
+    return candidates[0]
+
+
+DOCS_DIR = _get_docs_dir()
 
 
 def import_boq_template(
@@ -35,6 +48,10 @@ def import_boq_template(
 ) -> BOQ:
     if boq_type not in BOQ_TEMPLATES:
         raise ValueError(f"Unknown BOQ type: {boq_type}. Must be one of {list(BOQ_TEMPLATES.keys())}")
+
+    existing_boq = session.exec(select(BOQ).where(BOQ.project_id == project_id)).first()
+    if existing_boq:
+        return existing_boq
 
     tmpl = BOQ_TEMPLATES[boq_type]
     xlsx_path = DOCS_DIR / tmpl["file"]

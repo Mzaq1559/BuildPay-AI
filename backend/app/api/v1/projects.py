@@ -4,7 +4,7 @@ from app.core.deps import SessionDep, CurrentUser
 from app.models.project import Project
 from app.models.check_request import CheckRequest, CheckRequestStatus
 from app.models.variation import Variation, VariationStatus
-from app.models.ai_review import AIFinding, AIFindingSeverity
+from app.models.ai_review import AIReview, AIFinding, AIFindingSeverity
 from app.schemas.project import ProjectCreate, ProjectUpdate, ProjectResponse, ProjectSummary
 from app.services.audit_service import record_event
 from app.models.audit import AuditEventType
@@ -55,13 +55,16 @@ def get_project(project_id: int, session: SessionDep, current_user: CurrentUser)
         )
     ).all()
     ai_flags = session.exec(
-        select(AIFinding).join(AIFinding.__table__, AIFinding.review_id == AIFinding.review_id)
+        select(AIFinding).join(AIReview, AIFinding.review_id == AIReview.id).where(
+            AIReview.project_id == project_id,
+            AIFinding.severity.in_([AIFindingSeverity.WARNING, AIFindingSeverity.CRITICAL]),
+        )
     ).all()
     return ProjectSummary(
         **project.model_dump(),
         open_check_requests=len(open_crs),
         pending_variations=len(pending_vars),
-        ai_flags=0,
+        ai_flags=len(ai_flags),
     )
 
 
