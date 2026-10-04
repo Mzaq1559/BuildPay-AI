@@ -31,9 +31,15 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Keep local development origins while also honoring the deployment-specific
+# FRONTEND_URL configured through the environment (e.g. Azure Container Apps).
+allowed_origins = list(settings.ALLOWED_ORIGINS)
+if settings.FRONTEND_URL and settings.FRONTEND_URL not in allowed_origins:
+    allowed_origins.append(settings.FRONTEND_URL)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
